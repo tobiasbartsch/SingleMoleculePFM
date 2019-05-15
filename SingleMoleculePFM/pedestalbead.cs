@@ -15,10 +15,10 @@ namespace SingleMoleculePFM
         private double _sdev;
         private Random rng;
 
-        public pedestalbead(double RR, double ssdev, double xmean, double ymean, double zmean)
+        public pedestalbead(double R, double sdev, double xmean, double ymean, double zmean)
         {
-            _R = RR;
-            _sdev = ssdev;
+            _R = R;
+            _sdev = sdev;
             _xmean = xmean;
             _ymean = ymean;
             _zmean = zmean;

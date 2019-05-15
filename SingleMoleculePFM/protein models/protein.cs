@@ -9,5 +9,6 @@ namespace SingleMoleculePFM
     public interface protein
     {
         double Protenergy(double z);
+        //double PropagateFolding(double force, double dt, double dx);
     }
 }

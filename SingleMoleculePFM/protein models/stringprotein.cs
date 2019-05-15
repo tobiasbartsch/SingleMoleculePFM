@@ -26,5 +26,10 @@ namespace SingleMoleculePFM
                 return 4 * constants.kB * constants.T * (z - _length) / 10e-9;
             }
         }
+
+        public double PropagateFolding(double force, double dt, double dx)
+        {
+            return 0;
+        }
     }
 }

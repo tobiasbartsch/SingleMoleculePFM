@@ -23,20 +23,20 @@ namespace SingleMoleculePFM
         private double _dkdt;
         private bool _pull; //if pull == true, then we are pulling. If false, we are relaxing
 
-        public opticaltrap(double kkx, double kky, double kkz, double x, double y, double z)
+        public opticaltrap(double kx, double ky, double kz, double x, double y, double z)
         {
-            _kx = kkx;
-            _ky = kky;
-            _kz = kkz;
+            _kx = kx;
+            _ky = ky;
+            _kz = kz;
             _xcenter = x;
             _ycenter = y;
             _zcenter = z;
             _kx_ramp_low = 0; //initialize the lower value for force ramp experiments as zero
-            _kx_ramp_high = kkx; // initialize the upper value for force ramp experiments as kkx
+            _kx_ramp_high = kx; // initialize the upper value for force ramp experiments as kx
             _ky_ramp_low = 0; //initialize the lower value for force ramp experiments as zero
-            _ky_ramp_high = kky; // initialize the upper value for force ramp experiments as kkx
+            _ky_ramp_high = ky; // initialize the upper value for force ramp experiments as kx
             _kz_ramp_low = 0; //initialize the lower value for force ramp experiments as zero
-            _kz_ramp_high = kkz; // initialize the upper value for force ramp experiments as kkx
+            _kz_ramp_high = kz; // initialize the upper value for force ramp experiments as kx
             _dkdt = 0; // no force ramp defined for the beginning.
         }
 
@@ -60,15 +60,15 @@ namespace SingleMoleculePFM
         /// <param name="kz_ramp_low"></param>
         /// <param name="kz_ramp_high"></param>
         /// <param name="dkdt"></param>
-        public void InitForceRamp(double kx_ramp_low, double kx_ramp_high, double ky_ramp_low, double ky_ramp_high, double kz_ramp_low, double kz_ramp_high, double dkdt)
+        public void InitSpringConstRamp(double kx_ramp_low, double kx_ramp_high, double ky_ramp_low, double ky_ramp_high, double kz_ramp_low, double kz_ramp_high, double dkdt)
         {
             _kx_ramp_low = kx_ramp_low; //initialize the lower value for force ramp experiments as zero
-            _kx_ramp_high = kx_ramp_high; // initialize the upper value for force ramp experiments as kkx
+            _kx_ramp_high = kx_ramp_high; // initialize the upper value for force ramp experiments as kx
             _ky_ramp_low = ky_ramp_low; //initialize the lower value for force ramp experiments as zero
-            _ky_ramp_high = ky_ramp_high; // initialize the upper value for force ramp experiments as kkx
+            _ky_ramp_high = ky_ramp_high; // initialize the upper value for force ramp experiments as kx
             _kz_ramp_low = kz_ramp_low; //initialize the lower value for force ramp experiments as zero
-            _kz_ramp_high = kz_ramp_high; // initialize the upper value for force ramp experiments as kkx
-            _dkdt = dkdt; // no force ramp defined for the beginning.
+            _kz_ramp_high = kz_ramp_high; // initialize the upper value for force ramp experiments as kx
+            _dkdt = dkdt;
             _pull = true;
             TrapOff();
         }

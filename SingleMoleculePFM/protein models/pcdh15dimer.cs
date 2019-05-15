@@ -22,5 +22,10 @@ namespace SingleMoleculePFM
             return _firstmonomer.Protenergy(z) + _secondmonomer.Protenergy(z);
         }
 
+        public double PropagateFolding(double force, double dt, double dx)
+        {
+            return 0;
+        }
+
     }
 }

@@ -34,6 +34,14 @@ namespace SingleMoleculePFM
             _dtheta = dtheta;
         }
 
+        public protein protein
+        {
+            get
+            {
+                return _prot;
+            }
+        }
+
         /// <summary>
         /// size of the space increment to use to compute forces 
         /// </summary>
@@ -131,15 +139,19 @@ namespace SingleMoleculePFM
             //double ttheta = Math.acos(zz / rr);
             if (rr <= _pb.R + _probe.R)
             {
+                //Console.WriteLine("distance from origin: " + rr);
+                //Console.WriteLine("position: " + _probe.position[0]);
                 //return Double.POSITIVE_INFINITY;
-                //Console.WriteLine("IN PEDESTAL");
-                //return 2 * constants.kB * constants.T * Math.pow(((_pb.R + _proberad - rr) / 1e-9), 1);
+                //Console.WriteLine("IN PEDESTAL, protein length=" + r);
+                //return 100 * constants.kB * constants.T * Math.Pow(((_pb.R + _probe.R - rr) / 1e-9), 1);
                 return double.PositiveInfinity;
             }
             else //we are not in the pedestal, great. Return the tether energy
             {
                 //System.out.println("tether length r: " + r);
+                //Console.WriteLine(r);
                 return _prot.Protenergy(r);
+                
             }
         }
 
@@ -178,11 +190,18 @@ namespace SingleMoleculePFM
             posforces[0] = -(GetEnergy(probex + dx, probey, probez, protX + dx, protY, protZ) - GetEnergy(probex, probey, probez, protX, protY, protZ)) / dx;
             posforces[1] = -(GetEnergy(probex, probey + dx, probez, protX, protY + dx, protZ) - GetEnergy(probex, probey, probez, protX, protY, protZ)) / dx;
             posforces[2] = -(GetEnergy(probex, probey, probez + dx, protX, protY, protZ + dx) - GetEnergy(probex, probey, probez, protX, protY, protZ)) / dx;
+            //Console.WriteLine(posforces[0]);
+            if (Math.Abs(posforces[0]) > 1e-10 || Math.Abs(posforces[1]) > 1e-10 || Math.Abs(posforces[2]) > 1e-10)
+            {
+                //Console.WriteLine("stop");
+            }
+
             int i;
             for (i = 0; i < 3; i++)
             {
                 if (double.IsNaN(posforces[i]) || double.IsInfinity(posforces[i]))
                 {
+                    //Console.WriteLine(posforces[0]);
                     posforces[i] = 0;
                 }
             }

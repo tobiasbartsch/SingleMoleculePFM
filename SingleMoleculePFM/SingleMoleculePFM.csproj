@@ -47,18 +47,21 @@
   <ItemGroup>
     <Compile Include="constants.cs" />
     <Compile Include="assay.cs" />
+    <Compile Include="protein models\StickProtein.cs" />
+    <Compile Include="protein models\WLC.cs" />
     <Compile Include="DoubleBeadAssay.cs" />
+    <Compile Include="protein models\One3nmStep.cs" />
     <Compile Include="opticaltrap.cs" />
     <Compile Include="particle.cs" />
-    <Compile Include="pcdh15.cs" />
-    <Compile Include="pcdh15dimer.cs" />
+    <Compile Include="protein models\pcdh15.cs" />
+    <Compile Include="protein models\pcdh15dimer.cs" />
     <Compile Include="pedestalbead.cs" />
     <Compile Include="PFM.cs" />
     <Compile Include="RandomExtensions.cs" />
     <Compile Include="SimulateExperiment.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="protein.cs" />
-    <Compile Include="stringprotein.cs" />
+    <Compile Include="protein models\protein.cs" />
+    <Compile Include="protein models\stringprotein.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -57,9 +57,24 @@ namespace SingleMoleculePFM
             double x0 = _x;
             double y0 = _y;
             double z0 = _z;
+
             // keep trying to advance to position until we end up somewhere that does NOT have a positive infinite energy.
+            int counter = 0;
             do
             {
+                //if (double.IsPositiveInfinity(myassay.energy))
+                //{
+                //    if(localforcesPos[0] < -1e-10)
+                //    {
+                //        Console.WriteLine("blah2");
+                //    }
+                //    Console.WriteLine("from: " + x0 + " with force: " + localforcesPos[0]);
+                //    Console.WriteLine("assay force: " + myassay.forcesOnLinMotion[0]);
+                //}
+                counter += 1;
+                //if(counter > 100) {
+                //    Console.WriteLine(counter);
+                //}
                 _x = x0;
                 _y = y0;
                 _z = z0;

@@ -14,6 +14,7 @@ namespace SingleMoleculePFM
         /// <param name="dt"></param>
         void AdvanceEnergy(double dt);
 
+        protein protein { get; }
         /// <summary>
         /// the probe bead
         /// </summary>
