@@ -1,11 +1,7 @@
 ﻿using System.IO;
-using CsvHelper;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SingleMoleculePFM.protein_models;
+using SingleMoleculePFM.assays;
 
 namespace SingleMoleculePFM
 {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SingleMoleculePFM
+namespace SingleMoleculePFM.protein_models
 {
     /// <summary>
     /// Defines a protocadherin molecule.

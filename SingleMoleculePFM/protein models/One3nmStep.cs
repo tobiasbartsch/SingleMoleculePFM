@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SingleMoleculePFM
+namespace SingleMoleculePFM.protein_models
 {
     /// <summary>
     /// simulates a protein that unfolds with a 3nm step at fairly high forces (around 30 pN).

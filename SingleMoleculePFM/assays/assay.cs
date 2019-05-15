@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SingleMoleculePFM.protein_models;
 
-namespace SingleMoleculePFM
+namespace SingleMoleculePFM.assays
 {
     interface assay
     {

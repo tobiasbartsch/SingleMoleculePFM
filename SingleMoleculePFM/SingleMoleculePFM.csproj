@@ -46,10 +46,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="constants.cs" />
-    <Compile Include="assay.cs" />
+    <Compile Include="assays\assay.cs" />
     <Compile Include="protein models\StickProtein.cs" />
     <Compile Include="protein models\WLC.cs" />
-    <Compile Include="DoubleBeadAssay.cs" />
+    <Compile Include="assays\DoubleBeadAssay.cs" />
     <Compile Include="protein models\One3nmStep.cs" />
     <Compile Include="opticaltrap.cs" />
     <Compile Include="particle.cs" />
@@ -67,5 +67,6 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
