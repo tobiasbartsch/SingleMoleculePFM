@@ -155,7 +155,7 @@ namespace SingleMoleculePFM
         {
             _strongtrap.InitMaxLengthSequence(kx_ramp_low, kx_ramp_high, ky_ramp_low, ky_ramp_high, kz_ramp_low, kz_ramp_high);
 
-            int[] msequence = utils.readmsequence(@"/Users/dfirester1/MaxLengthSequence.txt");
+            
 
             
             double[,] timeseries = new double[N, 6];
