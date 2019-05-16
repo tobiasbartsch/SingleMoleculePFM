@@ -147,5 +147,60 @@ namespace SingleMoleculePFM
             return timeseries;
         }
 
+
+
+
+
+        public double[,] MakeTimeSeriesOfProbeMotionWithMSequence(long N, double dt, double kx_ramp_low, double kx_ramp_high, double ky_ramp_low, double ky_ramp_high, double kz_ramp_low, double kz_ramp_high, double dkdt)
+        {
+            _strongtrap.InitMaxLengthSequence(kx_ramp_low, kx_ramp_high, ky_ramp_low, ky_ramp_high, kz_ramp_low, kz_ramp_high);
+
+            int[] msequence = utils.readmsequence(@"/Users/dfirester1/MaxLengthSequence.txt");
+
+            
+            double[,] timeseries = new double[N, 6];
+            double unfoldingprob = 0.0;
+            int i = 0;
+            for (i = 0; i < N; i++)
+            {
+                Console.WriteLine(i);
+                timeseries[i, 0] = _myassay.probe.position[0];
+                timeseries[i, 1] = _myassay.probe.position[1];
+                timeseries[i, 2] = _myassay.probe.position[2];
+                timeseries[i, 3] = _myassay.probe.angles[0];
+                timeseries[i, 4] = _myassay.probe.angles[1];
+                timeseries[i, 5] = _strongtrap.kx;
+
+                //if the forces are very high we have to slow down time to not catapult the particle. Piconewtons are fine at our usual speed. Nanonewtons are not!
+                if (Math.Abs(TotalForcesLinMotion[0] / 1e-12) > 10)
+                {
+                    //slow down time
+                    int j = 0;
+                    int slowdown = (int)Math.Abs(TotalForcesLinMotion[0] / 1e-12) * 10;
+                    for (j = 0; j < slowdown; j++)
+                    {
+                        _myassay.probe.PropagatePosition(dt / slowdown, TotalForcesLinMotion, _myassay);
+                        _myassay.probe.PropagateRotation(dt / slowdown, TotalForcesRotMotion, _myassay);
+                        //_myassay.protein.PropagateFolding(_strongtrap.TrapForce(_myassay.probe.position[0], _myassay.probe.position[1], _myassay.probe.position[2], _myassay.dx)[0], dt/slowdown, _myassay.dx);
+                        _strongtrap.UpdateSpringValue(msequence[Convert.ToInt16(Math.Floor(Convert.ToDouble(i/100 + j/(100*slowdown))))]);
+                    }
+
+                }
+                else
+                {
+                    //regular time
+                    _myassay.probe.PropagatePosition(dt, TotalForcesLinMotion, _myassay);
+                    _myassay.probe.PropagateRotation(dt, TotalForcesRotMotion, _myassay);
+                    //_myassay.protein.PropagateFolding(TotalForcesLinMotion[0], dt, _myassay.dx);
+                    _strongtrap.UpdateSpringValue(msequence[Convert.ToInt16(Math.Floor(Convert.ToDouble(i/100)))]);
+                }
+            }
+
+            return timeseries;
+        }
+
     }
 }
+
+
+

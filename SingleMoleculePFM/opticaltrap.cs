@@ -73,6 +73,50 @@ namespace SingleMoleculePFM
             TrapOff();
         }
 
+
+
+        /// <summary>
+        /// Initialize a max length sequence. This switches the trap off (so that we commence pulling with zero force), sets the spring constants, but does not yet execute the M sequence.
+        /// </summary>
+        /// <param name="kx_ramp_low"></param>
+        /// <param name="kx_ramp_high"></param>
+        /// <param name="ky_ramp_low"></param>
+        /// <param name="ky_ramp_high"></param>
+        /// <param name="kz_ramp_low"></param>
+        /// <param name="kz_ramp_high"></param>
+        /// <param name="dkdt"></param>
+        public void InitMaxLengthSequence(double kx_ramp_low, double kx_ramp_high, double ky_ramp_low, double ky_ramp_high, double kz_ramp_low, double kz_ramp_high)
+        {
+            _kx_ramp_low = kx_ramp_low; //initialize the lower value for force ramp experiments as zero
+            _kx_ramp_high = kx_ramp_high; // initialize the upper value for force ramp experiments as kx
+            _ky_ramp_low = ky_ramp_low; //initialize the lower value for force ramp experiments as zero
+            _ky_ramp_high = ky_ramp_high; // initialize the upper value for force ramp experiments as kx
+            _kz_ramp_low = kz_ramp_low; //initialize the lower value for force ramp experiments as zero
+            _kz_ramp_high = kz_ramp_high; // initialize the upper value for force ramp experiments as kx
+            _pull = true;
+            TrapOff();
+        }
+
+
+
+        public void UpdateSpringValue(int MLS_val)
+        {
+            if (MLS_val == 1)
+            {
+                _kx = _kx_ramp_high;
+                _ky = _ky_ramp_high;
+                _kz = _kz_ramp_high;
+            }
+
+            if (MLS_val == -1)
+            {
+                _kx = _kx_ramp_low;
+                _ky = _ky_ramp_low;
+                _kz = _kz_ramp_low;
+            }
+        }
+
+
         /// <summary>
         /// Propagates the spring constant of the optical trap to perform force ramp experiments. You should call InitForceRamp before executing this for the first time or you will get unexpected results
         /// </summary>

@@ -14,14 +14,14 @@ namespace SingleMoleculePFM
         static readonly double dx = 1e-11; //spatial resolution. 1e-10 m works well.
         static readonly double dtheta = 2e-5; //angular resolution in radians. For r = 500 nm of the probe bead, dtheta = 2e-4 results in 1e-10 m resolution of arc-length increments of the bead's surface
         static readonly double dt = 1e-7; //temporal resolution in seconds.
-        static readonly Int64 N = (long)1e7; //number of points we wish to simulate.
+        static readonly Int64 N = (long)1e4; //number of points we wish to simulate.
 
         /// <summary>
         /// Call the definition of your assay from the main method. See 'double[,] timeseries = SimulateWLC();' as an example.
         /// </summary>
         static void Main(string[] args)
         {
-            double[,] timeseries = SimulateWLC();
+            double[,] timeseries = SimulateWLCMLS();
 
             utils.write(timeseries);
         }
@@ -109,6 +109,35 @@ namespace SingleMoleculePFM
 
             return timeseries;
         }
+
+
+
+        /// <summary>
+        /// Simulates the motion of a probe bead on the end of an inextensible WLC, with a MLS pulling protocol being applied to the
+        /// stiffness of the optical trap.
+        /// </summary>
+        /// <returns>The wlcmls.</returns>
+        static double[,] SimulateWLCMLS()
+        {
+            protein myprotein = new WLC(5e-9, 50e-9);
+            particle myprobe = new particle(500e-9, 1, 1540e-9, 0e-9, 0e-9);
+            pedestalbead mypedestal = new pedestalbead(1000e-9, 0e-9, 0, 0, 0);
+            assay myassay = new DoubleBeadAssay(mypedestal, myprotein, myprobe, dx, dtheta);
+
+
+
+            myprobe.ProteinAnchorAngles = new double[] { Math.PI / 2, Math.PI };
+
+            opticaltrap maintrap = new opticaltrap(1e-5, 1e-5, 1e-6, 1500e-9, 0, 0);
+            opticaltrap strongtrap = new opticaltrap(3e-4, 3e-4, 3e-5, 1700e-9, 0, 0);
+
+            PFM mypfm = new PFM(myassay, maintrap, strongtrap);
+
+            double[,] timeseries = mypfm.MakeTimeSeriesOfProbeMotionWithMSequence(N, dt, 0.0, 3.5e-4, 0.0, 3.5e-4, 0.0, 3.5e-5, 8e-4);
+
+            return timeseries;
+        }
+
 
         /// <summary>
         /// Simulates motion of the probe bead on the end of an (almost) inextensible stick.

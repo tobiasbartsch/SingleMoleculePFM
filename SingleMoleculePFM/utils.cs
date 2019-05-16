@@ -11,7 +11,7 @@ namespace SingleMoleculePFM
     {
         public static void write(double[,] timeseries)
         {
-            StreamWriter file = new StreamWriter(@"C:\Users\tobia\Desktop\WLC.csv");
+            StreamWriter file = new StreamWriter(@"WLC.csv");
             for (int j = 0; j < timeseries.GetLength(0); j++)
             {
                 for (int i = 0; i < timeseries.GetLength(1); i++)
