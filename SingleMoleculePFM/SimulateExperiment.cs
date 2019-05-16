@@ -1,4 +1,4 @@
-﻿using System.IO;
+﻿
 using System;
 using SingleMoleculePFM.protein_models;
 using SingleMoleculePFM.assays;
@@ -23,16 +23,7 @@ namespace SingleMoleculePFM
         {
             double[,] timeseries = SimulateWLC();
 
-            StreamWriter file = new StreamWriter(@"C:\Users\tobia\Desktop\WLC.csv");
-            for (int j = 0; j < timeseries.GetLength(0); j++)
-            {
-                for (int i = 0; i < timeseries.GetLength(1); i++)
-                {
-                    file.Write(timeseries[j, i]);
-                    file.Write(",");
-                }
-                file.Write("\n"); // go to next line
-            }
+            utils.write(timeseries);
         }
 
         /// <summary>

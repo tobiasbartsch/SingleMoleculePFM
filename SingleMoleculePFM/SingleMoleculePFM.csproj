@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="utils.cs" />
     <Compile Include="constants.cs" />
     <Compile Include="assays\assay.cs" />
     <Compile Include="protein models\StickProtein.cs" />
