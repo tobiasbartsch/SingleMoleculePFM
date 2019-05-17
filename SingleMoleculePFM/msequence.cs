@@ -76,7 +76,7 @@ namespace SingleMoleculePFM
         /// <summary>
         /// Advance the msequence by one step. If the msequence is at the end, reset it to zero
         /// </summary>
-        public void AdvanceMsequence()
+        private void AdvanceMsequence()
         {
             if(_current_position < _length)
             {
@@ -91,12 +91,12 @@ namespace SingleMoleculePFM
         }
 
         /// <summary>
-        /// Advance fraction position by <paramref name="val"/>. If the fraction position goes over 1, trigger AdvanceMsequence.
+        /// Propagate msequence by <paramref name="dt"/>.
         /// </summary>
-        /// <param name="val">Value.</param>
-        public void AdvanceMsequenceFraction(double val)
+        /// <param name="dt">Advance msequence by dt seconds.</param>
+        public void PropagateMsequenceFraction(double dt)
         {
-            _fraction_position += val;
+            _fraction_position += dt/_dt_mseq;
 
             if (_fraction_position >= 1)
             {

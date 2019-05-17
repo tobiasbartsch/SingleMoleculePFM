@@ -186,7 +186,7 @@ namespace SingleMoleculePFM
                         _myassay.probe.PropagatePosition(dt / slowdown, TotalForcesLinMotion, _myassay);
                         _myassay.probe.PropagateRotation(dt / slowdown, TotalForcesRotMotion, _myassay);
                         //_myassay.protein.PropagateFolding(_strongtrap.TrapForce(_myassay.probe.position[0], _myassay.probe.position[1], _myassay.probe.position[2], _myassay.dx)[0], dt/slowdown, _myassay.dx);
-                        _mymsequence.AdvanceMsequenceFraction(dt / (_mymsequence.dt_mseq*slowdown));
+                        _mymsequence.PropagateMsequenceFraction(dt);
 
 
                         _strongtrap.UpdateSpringValue(_mymsequence.value);
@@ -199,7 +199,7 @@ namespace SingleMoleculePFM
                     _myassay.probe.PropagatePosition(dt, TotalForcesLinMotion, _myassay);
                     _myassay.probe.PropagateRotation(dt, TotalForcesRotMotion, _myassay);
                     //_myassay.protein.PropagateFolding(TotalForcesLinMotion[0], dt, _myassay.dx);
-                    _mymsequence.AdvanceMsequenceFraction(dt / _mymsequence.dt_mseq);
+                    _mymsequence.PropagateMsequenceFraction(dt);
 
 
                     _strongtrap.UpdateSpringValue(_mymsequence.value);
