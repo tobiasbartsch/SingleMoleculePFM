@@ -98,17 +98,20 @@ namespace SingleMoleculePFM
         }
 
 
-
-        public void UpdateSpringValue(int MLS_val)
+        /// <summary>
+        /// Updates the spring value depending on the value of the msequence.
+        /// </summary>
+        /// <param name="current_MLS_val">Current mlsval.</param>
+        public void UpdateSpringValue(int current_MLS_val)
         {
-            if (MLS_val == 1)
+            if (current_MLS_val == 1)
             {
                 _kx = _kx_ramp_high;
                 _ky = _ky_ramp_high;
                 _kz = _kz_ramp_high;
             }
 
-            if (MLS_val == -1)
+            if (current_MLS_val == -1)
             {
                 _kx = _kx_ramp_low;
                 _ky = _ky_ramp_low;

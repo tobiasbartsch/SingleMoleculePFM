@@ -153,10 +153,12 @@ namespace SingleMoleculePFM
 
         public double[,] MakeTimeSeriesOfProbeMotionWithMSequence(long N, double dt, double kx_ramp_low, double kx_ramp_high, double ky_ramp_low, double ky_ramp_high, double kz_ramp_low, double kz_ramp_high, double dkdt)
         {
+
             _strongtrap.InitMaxLengthSequence(kx_ramp_low, kx_ramp_high, ky_ramp_low, ky_ramp_high, kz_ramp_low, kz_ramp_high);
 
-            
 
+            // Initiate and load the msequence from a file
+            msequence _mymsequence = new msequence(@"/Users/dfirester1/maxlengthsequence.txt",1e-5);
             
             double[,] timeseries = new double[N, 6];
             double unfoldingprob = 0.0;
@@ -171,6 +173,8 @@ namespace SingleMoleculePFM
                 timeseries[i, 4] = _myassay.probe.angles[1];
                 timeseries[i, 5] = _strongtrap.kx;
 
+              
+
                 //if the forces are very high we have to slow down time to not catapult the particle. Piconewtons are fine at our usual speed. Nanonewtons are not!
                 if (Math.Abs(TotalForcesLinMotion[0] / 1e-12) > 10)
                 {
@@ -182,7 +186,10 @@ namespace SingleMoleculePFM
                         _myassay.probe.PropagatePosition(dt / slowdown, TotalForcesLinMotion, _myassay);
                         _myassay.probe.PropagateRotation(dt / slowdown, TotalForcesRotMotion, _myassay);
                         //_myassay.protein.PropagateFolding(_strongtrap.TrapForce(_myassay.probe.position[0], _myassay.probe.position[1], _myassay.probe.position[2], _myassay.dx)[0], dt/slowdown, _myassay.dx);
-                        _strongtrap.UpdateSpringValue(msequence[Convert.ToInt16(Math.Floor(Convert.ToDouble(i/100 + j/(100*slowdown))))]);
+                        _mymsequence.AdvanceMsequenceFraction(dt / (_mymsequence.dt_mseq*slowdown));
+
+
+                        _strongtrap.UpdateSpringValue(_mymsequence.value);
                     }
 
                 }
@@ -192,7 +199,10 @@ namespace SingleMoleculePFM
                     _myassay.probe.PropagatePosition(dt, TotalForcesLinMotion, _myassay);
                     _myassay.probe.PropagateRotation(dt, TotalForcesRotMotion, _myassay);
                     //_myassay.protein.PropagateFolding(TotalForcesLinMotion[0], dt, _myassay.dx);
-                    _strongtrap.UpdateSpringValue(msequence[Convert.ToInt16(Math.Floor(Convert.ToDouble(i/100)))]);
+                    _mymsequence.AdvanceMsequenceFraction(dt / _mymsequence.dt_mseq);
+
+
+                    _strongtrap.UpdateSpringValue(_mymsequence.value);
                 }
             }
 

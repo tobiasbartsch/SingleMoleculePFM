@@ -16,6 +16,7 @@ namespace SingleMoleculePFM
         int _length;
         double _dt_mseq;
         int _current_position;
+        double _fraction_position;
         #endregion
 
         /// <summary>
@@ -28,6 +29,7 @@ namespace SingleMoleculePFM
             _msequence = utils.readmsequence(filename);
             _dt_mseq = dt_mseq;
             _length = _msequence.Length;
+            _fraction_position = 0; // current position between steps in the msequence;
             _current_position = 0; //current position in the msequence.
         }
 
@@ -54,19 +56,65 @@ namespace SingleMoleculePFM
             }
         }
 
+
+
+        /// <summary>
+        /// The current fractional position between steps in the msequence.
+        /// </summary>
+        /// <value>The fraction position.</value>
+        public double fractionPosition
+        {
+            get 
+            {
+                return _fraction_position;
+            }
+        }
+        
         #endregion
 
         #region methods
         /// <summary>
-        /// Advance the msequence by one step.
+        /// Advance the msequence by one step. If the msequence is at the end, reset it to zero
         /// </summary>
         public void AdvanceMsequence()
         {
             if(_current_position < _length)
             {
                 _current_position++;
+                _fraction_position = 0; // reset the fraction position to zero
+            }
+            else
+            {
+                _current_position = 0;
+                _fraction_position = 0;
             }
         }
+
+        /// <summary>
+        /// Advance fraction position by <paramref name="val"/>. If the fraction position goes over 1, trigger AdvanceMsequence.
+        /// </summary>
+        /// <param name="val">Value.</param>
+        public void AdvanceMsequenceFraction(double val)
+        {
+            _fraction_position += val;
+
+            if (_fraction_position >= 1)
+            {
+                AdvanceMsequence();
+            }
+        }
+
+        /// <summary>
+        /// Reset the position in the msequence to 0
+        /// </summary>
+        public void ResetMsequence()
+        {
+
+            _current_position = 0;
+            _fraction_position = 0;
+           
+        }
+
 
 
         /// <summary>
@@ -77,7 +125,7 @@ namespace SingleMoleculePFM
         public void reload_sequence(string filename, double dt)
         {
             _msequence = utils.readmsequence(filename);
-            _dt = dt;
+            _dt_mseq = dt;
             _length = _msequence.Length;
         }
 
