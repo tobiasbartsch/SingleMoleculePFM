@@ -11,6 +11,9 @@ namespace SingleMoleculePFM
         private double _kx;
         private double _ky;
         private double _kz;
+        private double _kx_command;
+        private double _ky_command;
+        private double _kz_command;
         private double _xcenter;
         private double _ycenter;
         private double _zcenter;
@@ -21,13 +24,19 @@ namespace SingleMoleculePFM
         private double _kz_ramp_low;
         private double _kz_ramp_high;
         private double _dkdt;
+        private double _lowpassrate;
+        private bool _lowpass; // if lowpass = true, then low pass filter is on.
         private bool _pull; //if pull == true, then we are pulling. If false, we are relaxing
+        
 
         public opticaltrap(double kx, double ky, double kz, double x, double y, double z)
         {
             _kx = kx;
             _ky = ky;
             _kz = kz;
+            _kx_command = kx;
+            _ky_command = ky;
+            _kz_command = kz;
             _xcenter = x;
             _ycenter = y;
             _zcenter = z;
@@ -38,6 +47,7 @@ namespace SingleMoleculePFM
             _kz_ramp_low = 0; //initialize the lower value for force ramp experiments as zero
             _kz_ramp_high = kz; // initialize the upper value for force ramp experiments as kx
             _dkdt = 0; // no force ramp defined for the beginning.
+            _lowpassrate = 0; // No low pass filter rate defined to begin
         }
 
         /// <summary>
@@ -48,6 +58,28 @@ namespace SingleMoleculePFM
             _kx = 0;
             _ky = 0;
             _kz = 0;
+        }
+
+
+        /// <summary>
+        /// Turns the low pass filter on, and sets a rate for the filter
+        /// </summary>
+        /// <param name="lowpassrate">Lowpassrate.</param>
+        public void LowPassFilterOn(double lowpassrate)
+        {
+            _lowpass = true;
+            _lowpassrate = lowpassrate;
+        }
+
+
+
+        /// <summary>
+        /// Turns the pass filter off.
+        /// </summary>
+        public void LowPassFilterOff()
+        {
+            _lowpass = false;
+            _lowpassrate = 0;
         }
 
         /// <summary>
@@ -85,7 +117,7 @@ namespace SingleMoleculePFM
         /// <param name="kz_ramp_low"></param>
         /// <param name="kz_ramp_high"></param>
         /// <param name="dkdt"></param>
-        public void InitMaxLengthSequence(double kx_ramp_low, double kx_ramp_high, double ky_ramp_low, double ky_ramp_high, double kz_ramp_low, double kz_ramp_high)
+        public void InitMaxLengthSequence(double kx_ramp_low, double kx_ramp_high, double ky_ramp_low, double ky_ramp_high, double kz_ramp_low, double kz_ramp_high, double lowpassfilterrate)
         {
             _kx_ramp_low = kx_ramp_low; //initialize the lower value for force ramp experiments as zero
             _kx_ramp_high = kx_ramp_high; // initialize the upper value for force ramp experiments as kx
@@ -95,27 +127,50 @@ namespace SingleMoleculePFM
             _kz_ramp_high = kz_ramp_high; // initialize the upper value for force ramp experiments as kx
             _pull = true;
             TrapOff();
+            LowPassFilterOn(lowpassfilterrate);
         }
 
 
         /// <summary>
-        /// Updates the spring value depending on the value of the msequence.
+        /// Propagates forward the Msequence by dt, and changes the corresponding springe values. If low pass filter is turned on
+        /// then the new value of _kx will be low pass filtered to the new commanded _kx_command. If not, it will be updated instantanously.
         /// </summary>
         /// <param name="current_MLS_val">Current mlsval.</param>
-        public void UpdateSpringValue(int current_MLS_val)
+        public void PropagateMSequence(double dt, msequence _mymsequence)
         {
-            if (current_MLS_val == 1)
+
+            // propgatage the msequence forward by dt
+            _mymsequence.PropagateMsequenceFraction(dt);
+
+           
+
+            if (_mymsequence.value == 1)
             {
-                _kx = _kx_ramp_high;
-                _ky = _ky_ramp_high;
-                _kz = _kz_ramp_high;
+                _kx_command = _kx_ramp_high;
+                _ky_command = _ky_ramp_high;
+                _kz_command = _kz_ramp_high;
             }
 
-            if (current_MLS_val == -1)
+            if (_mymsequence.value == -1)
             {
-                _kx = _kx_ramp_low;
-                _ky = _ky_ramp_low;
-                _kz = _kz_ramp_low;
+                _kx_command = _kx_ramp_low;
+                _ky_command = _ky_ramp_low;
+                _kz_command = _kz_ramp_low;
+            }
+
+
+            // if lowpass filter is on, then we want to lowpass filter the _kx value
+            if (_lowpass == true)
+            {
+                _kx += dt * _lowpassrate * (_kx_command - _kx);
+                _ky += dt * _lowpassrate * (_ky_command - _ky);
+                _kz += dt * _lowpassrate * (_kz_command - _kz);
+            }
+            else
+            {
+                _kx = _kx_command;
+                _ky = _ky_command;
+                _kz = _kz_command;
             }
         }
 
@@ -127,7 +182,8 @@ namespace SingleMoleculePFM
         public void PropagateForceRamp(double dt)
         {
             //calculate kx, then scale other directions proportionally
-            
+
+
             //are we ramping the force up or down?
             if(_pull==true)
             {
@@ -195,11 +251,16 @@ namespace SingleMoleculePFM
             return forces;
         }
 
+
+       
+
+
         /// <summary>
         /// spring constant along x direction
         /// </summary>
         public double kx {
-            get {
+            get 
+            {
                 return _kx;
             }
             set

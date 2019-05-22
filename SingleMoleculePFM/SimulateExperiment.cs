@@ -133,7 +133,7 @@ namespace SingleMoleculePFM
 
             PFM mypfm = new PFM(myassay, maintrap, strongtrap);
 
-            double[,] timeseries = mypfm.MakeTimeSeriesOfProbeMotionWithMSequence(N, dt, 0.0, 3.5e-4, 0.0, 3.5e-4, 0.0, 3.5e-5, 8e-4);
+            double[,] timeseries = mypfm.MakeTimeSeriesOfProbeMotionWithMSequence(N, dt, 0.0, 3.5e-4, 0.0, 3.5e-4, 0.0, 3.5e-5,1e6);
 
             return timeseries;
         }
