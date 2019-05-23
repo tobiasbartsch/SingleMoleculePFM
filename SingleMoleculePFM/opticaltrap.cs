@@ -25,8 +25,11 @@ namespace SingleMoleculePFM
         private double _kz_ramp_high;
         private double _dkdt;
         private double _lowpassrate;
+        private msequence _mymsequence;
         private bool _lowpass; // if lowpass = true, then low pass filter is on.
         private bool _pull; //if pull == true, then we are pulling. If false, we are relaxing
+        private bool _mseq; // if mseq = true, run the mseq protocol
+        private bool _ramp; // if ramp = true, run the ramp protocol
         
 
         public opticaltrap(double kx, double ky, double kz, double x, double y, double z)
@@ -58,6 +61,9 @@ namespace SingleMoleculePFM
             _kx = 0;
             _ky = 0;
             _kz = 0;
+            _kx_command = 0;
+            _ky_command = 0;
+            _kz_command = 0;
         }
 
 
@@ -103,6 +109,10 @@ namespace SingleMoleculePFM
             _dkdt = dkdt;
             _pull = true;
             TrapOff();
+
+
+            _ramp = true; // toggle the ramp condition on
+            _mseq = false; // toggle the msequence condition off
         }
 
 
@@ -117,8 +127,9 @@ namespace SingleMoleculePFM
         /// <param name="kz_ramp_low"></param>
         /// <param name="kz_ramp_high"></param>
         /// <param name="dkdt"></param>
-        public void InitMaxLengthSequence(double kx_ramp_low, double kx_ramp_high, double ky_ramp_low, double ky_ramp_high, double kz_ramp_low, double kz_ramp_high, double lowpassfilterrate)
+        public void InitMaxLengthSequence(double kx_ramp_low, double kx_ramp_high, double ky_ramp_low, double ky_ramp_high, double kz_ramp_low, double kz_ramp_high, double lowpassfilterrate, msequence msequence)
         {
+            _mymsequence = msequence;
             _kx_ramp_low = kx_ramp_low; //initialize the lower value for force ramp experiments as zero
             _kx_ramp_high = kx_ramp_high; // initialize the upper value for force ramp experiments as kx
             _ky_ramp_low = ky_ramp_low; //initialize the lower value for force ramp experiments as zero
@@ -127,16 +138,56 @@ namespace SingleMoleculePFM
             _kz_ramp_high = kz_ramp_high; // initialize the upper value for force ramp experiments as kx
             _pull = true;
             TrapOff();
-            LowPassFilterOn(lowpassfilterrate);
+            LowPassFilterOn(lowpassfilterrate); // toggle the low pass filter on
+            
+
+            _ramp = false; // toggle the ramp condition off
+            _mseq = true; // toggle the msequence condition on
+
         }
 
 
+
+
         /// <summary>
-        /// Propagates forward the Msequence by dt, and changes the corresponding springe values. If low pass filter is turned on
+        /// Propagates the Optical Trap forward by dt, and changes the corresponding spring values.
+        /// </summary>
+        /// <param name="dt">Dt.</param>
+        public void PropagateOpticalTrap(double dt)
+        {
+
+            if (_ramp == true)
+            {
+                PropagateForceRamp(dt);
+            }
+            if (_mseq == true)
+            {
+                PropagateMSequence(dt);
+            }
+
+         
+            if (_lowpass == true)
+            {
+                _kx += dt * _lowpassrate * (_kx_command - _kx);
+                _ky += dt * _lowpassrate * (_ky_command - _ky);
+                _kz += dt * _lowpassrate * (_kz_command - _kz);
+            }
+            else
+            {
+                _kx = _kx_command;
+                _ky = _ky_command;
+                _kz = _kz_command;
+            }
+        }
+
+
+
+        /// <summary>
+        /// Propagates forward the Msequence by dt, and changes the corresponding spring values. If low pass filter is turned on
         /// then the new value of _kx will be low pass filtered to the new commanded _kx_command. If not, it will be updated instantanously.
         /// </summary>
         /// <param name="current_MLS_val">Current mlsval.</param>
-        public void PropagateMSequence(double dt, msequence _mymsequence)
+        private void PropagateMSequence(double dt)
         {
 
             // propgatage the msequence forward by dt
@@ -157,21 +208,6 @@ namespace SingleMoleculePFM
                 _ky_command = _ky_ramp_low;
                 _kz_command = _kz_ramp_low;
             }
-
-
-            // if lowpass filter is on, then we want to lowpass filter the _kx value
-            if (_lowpass == true)
-            {
-                _kx += dt * _lowpassrate * (_kx_command - _kx);
-                _ky += dt * _lowpassrate * (_ky_command - _ky);
-                _kz += dt * _lowpassrate * (_kz_command - _kz);
-            }
-            else
-            {
-                _kx = _kx_command;
-                _ky = _ky_command;
-                _kz = _kz_command;
-            }
         }
 
 
@@ -179,7 +215,7 @@ namespace SingleMoleculePFM
         /// Propagates the spring constant of the optical trap to perform force ramp experiments. You should call InitForceRamp before executing this for the first time or you will get unexpected results
         /// </summary>
         /// <param name="dt">time step in seconds</param>
-        public void PropagateForceRamp(double dt)
+        private void PropagateForceRamp(double dt)
         {
             //calculate kx, then scale other directions proportionally
 
@@ -189,37 +225,39 @@ namespace SingleMoleculePFM
             {
                 //we are ramping up
                 //make sure we do not ramp above kx_ramp_high
-                if(_kx+dt*_dkdt > _kx_ramp_high)
+                if(_kx_command+dt*_dkdt > _kx_ramp_high)
                 {
                     //stop pulling, start relaxing
-                    _kx = _kx - dt * _dkdt;
+                    _kx_command = _kx_command - dt * _dkdt;
                     _pull = false;
                 }
                 else
                 {
                     //keep pulling
-                    _kx = _kx + dt * _dkdt;
+                    _kx_command = _kx_command + dt * _dkdt;
                 }
             }
             else
             {
                 //we are ramping down
                 //make sure we do not ramp below kx_ramp_low
-                if(_kx - dt * _dkdt < _kx_ramp_low)
+                if(_kx_command - dt * _dkdt < _kx_ramp_low)
                 {
                     //stop relaxing, start pulling
-                    _kx = _kx + dt * _dkdt;
+                    _kx_command = _kx_command + dt * _dkdt;
                     _pull = true;
                 }
                 else
                 {
                     //keep relaxing
-                    _kx = _kx - dt * _dkdt;
+                    _kx_command = _kx_command - dt * _dkdt;
                 }
             }
-            _ky = _kx / _kx_ramp_high * _ky_ramp_high;
-            _kz = _kx / _kx_ramp_high * _kz_ramp_high;
+            _ky_command = _kx_command / _kx_ramp_high * _ky_ramp_high;
+            _kz_command = _kx_command / _kx_ramp_high * _kz_ramp_high;
         }
+
+
 
         /// <summary>
         /// Potential energy of a particle in the optical trap if the particle is at global coordinates x, y, z

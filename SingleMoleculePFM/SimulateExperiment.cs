@@ -21,7 +21,7 @@ namespace SingleMoleculePFM
         /// </summary>
         static void Main(string[] args)
         {
-            double[,] timeseries = SimulateWLCMLS();
+            double[,] timeseries = SimulateWLC();
 
             utils.write(timeseries);
         }

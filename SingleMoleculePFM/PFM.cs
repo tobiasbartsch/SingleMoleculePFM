@@ -130,7 +130,7 @@ namespace SingleMoleculePFM
                         _myassay.probe.PropagatePosition(dt/slowdown, TotalForcesLinMotion, _myassay);
                         _myassay.probe.PropagateRotation(dt/slowdown, TotalForcesRotMotion, _myassay);
                         //_myassay.protein.PropagateFolding(_strongtrap.TrapForce(_myassay.probe.position[0], _myassay.probe.position[1], _myassay.probe.position[2], _myassay.dx)[0], dt/slowdown, _myassay.dx);
-                        _strongtrap.PropagateForceRamp(dt/slowdown);
+                        _strongtrap.PropagateOpticalTrap(dt/slowdown);
                     }
 
                 }
@@ -140,7 +140,7 @@ namespace SingleMoleculePFM
                     _myassay.probe.PropagatePosition(dt, TotalForcesLinMotion, _myassay);
                     _myassay.probe.PropagateRotation(dt, TotalForcesRotMotion, _myassay);
                     //_myassay.protein.PropagateFolding(TotalForcesLinMotion[0], dt, _myassay.dx);
-                    _strongtrap.PropagateForceRamp(dt);
+                    _strongtrap.PropagateOpticalTrap(dt);
                 }
             }
 
@@ -154,12 +154,14 @@ namespace SingleMoleculePFM
         public double[,] MakeTimeSeriesOfProbeMotionWithMSequence(long N, double dt, double kx_ramp_low, double kx_ramp_high, double ky_ramp_low, double ky_ramp_high, double kz_ramp_low, double kz_ramp_high, double lowpass_cutoff)
         {
 
-            _strongtrap.InitMaxLengthSequence(kx_ramp_low, kx_ramp_high, ky_ramp_low, ky_ramp_high, kz_ramp_low, kz_ramp_high,lowpass_cutoff);
+
 
 
             // Initiate and load the msequence from a file
             msequence _mymsequence = new msequence(@"/Users/dfirester1/maxlengthsequence.txt",1e-5);
-            
+
+            _strongtrap.InitMaxLengthSequence(kx_ramp_low, kx_ramp_high, ky_ramp_low, ky_ramp_high, kz_ramp_low, kz_ramp_high, lowpass_cutoff, _mymsequence);
+
             double[,] timeseries = new double[N, 6];
             double unfoldingprob = 0.0;
             int i = 0;
@@ -186,7 +188,7 @@ namespace SingleMoleculePFM
                         _myassay.probe.PropagatePosition(dt / slowdown, TotalForcesLinMotion, _myassay);
                         _myassay.probe.PropagateRotation(dt / slowdown, TotalForcesRotMotion, _myassay);
                         //_myassay.protein.PropagateFolding(_strongtrap.TrapForce(_myassay.probe.position[0], _myassay.probe.position[1], _myassay.probe.position[2], _myassay.dx)[0], dt/slowdown, _myassay.dx);
-                        _strongtrap.PropagateMSequence(dt / slowdown,_mymsequence);
+                        _strongtrap.PropagateOpticalTrap(dt / slowdown);
 
 
                       
@@ -199,7 +201,7 @@ namespace SingleMoleculePFM
                     _myassay.probe.PropagatePosition(dt, TotalForcesLinMotion, _myassay);
                     _myassay.probe.PropagateRotation(dt, TotalForcesRotMotion, _myassay);
                     //_myassay.protein.PropagateFolding(TotalForcesLinMotion[0], dt, _myassay.dx);
-                    _strongtrap.PropagateMSequence(dt,_mymsequence);
+                    _strongtrap.PropagateOpticalTrap(dt);
 
 
 
