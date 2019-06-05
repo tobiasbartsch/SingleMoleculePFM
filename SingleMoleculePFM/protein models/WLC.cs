@@ -22,7 +22,7 @@ namespace SingleMoleculePFM.protein_models
         {
             double energy = 0;
 
-            energy = constants.kB * constants.T * (-_lc * z + 2 * Math.Pow(z, 2) - Math.Pow(z, 3) / (z - _lc));
+            energy = constants.kB * constants.T * (-_lc * z + 2 * Math.Pow(z, 2) - Math.Pow(_lc, 3) / (z - _lc));
             energy = energy / (4 * _lc * _lp);
             return energy;
             //return 0;
